@@ -1,2 +1,6 @@
 /node_modules
 configTest.js
+.env
+node_modules/
+package-lock.json
+bookings.db

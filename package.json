@@ -10,8 +10,12 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "dotenv": "^9.0.2",
     "express": "^4.16.2",
     "express-handlebars": "^3.0.0",
-    "nodemailer": "^4.2.0"
+    "i18n": "^0.13.3",
+    "json-2-csv": "^3.11.1",
+    "nodemailer": "^4.2.0",
+    "sqlite3": "^5.0.2"
   }
 }

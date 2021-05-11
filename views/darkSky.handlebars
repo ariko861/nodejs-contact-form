@@ -19,6 +19,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" href="/public/css/darkSky.css">
         <link rel="stylesheet" href="/public/css/fontawesome.min.css">
+         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
         
     </head>
     <body>
@@ -31,42 +32,31 @@
                 <div class="col-lg-4 left-column">
 
                     <div class="tittle-container">
-                        <h2 class="tittle">Get in Touch</h2>
-                        <h4 class="subtitle">We'd love hear from you</h4>
+                        <h2 class="tittle">{{{__ 'Get in Touch'}}}</h2>
+                        <h4 class="subtitle">{{{__ "We'd love hear from you"}}}</h4>
+                        
                     </div>
 
                     <!-- Form -->
                     <form class="contact-form" method="POST" action="send">
                         {{{msg}}}
-
-                            <!-- Name -->
+                            {{# each fields }}
+                            <!-- {{this.label}} -->
                             <div class="form-group row">
-                                <label class="col-lg-4 col-form-label">Your Name</label>
+                                <label class="col-lg-4 col-form-label">{{this.label}}</label>
                                 <div class="col-lg-8">
-                                    <input type="text" name="name" class="form-control form-control-sm">
+                                    {{#if this.textarea}}
+                                        <textarea class="form-control form-control-sm" name="{{this.name}}" rows="5" {{#if this.required}} required {{/if}} placeholder="{{this.placeholder}}"></textarea>
+                                    {{else}}
+                                        <input type="{{this.type}}" name="{{this.name}}" class="form-control form-control-sm" {{#if this.required}} required {{/if}} placeholder="{{this.placeholder}}" {{#if this.notBeforeToday}} min="{{@root.today}}" {{/if}}>
+                                    {{/if}}
                                 </div>
                             </div>
-
-                            <!-- Email -->
-                            <div class="form-group row">
-                                <label class="col-lg-4 col-form-label">Email Adress</label>
-                                <div class="col-lg-8">
-                                    <input type="email" name="email" class="form-control form-control-sm">
-                                </div>
-                            </div>
-                            
-                            <!-- Message -->
-                            <div class="form-group row">
-                                <label class="col-lg-4 col-form-label">Message</label>
-                                <div class="col-lg-8">
-                                    <textarea class="form-control form-control-sm" name="message" rows="5" required></textarea>
-                                </div>
-                                    
-                            </div>
+                            {{/each}}
 
                             <!-- Submit Button -->
                             <div class="text-right">
-                                <input class="btn btn-submit" type="submit" value="Submit">
+                                <input class="btn btn-submit" type="submit" value={{{__ "Submit"}}}>
                             </div>
 
                     </form>
@@ -97,105 +87,27 @@
         <script>
             var map;
             function initMap() {
-                var myLatLng = {lat: 48.8583701, lng: 2.2944813};
+                var myLatLng = [{{coordinates.lat}}, {{coordinates.long}}];
+                
+                var map = L.map('map').setView(myLatLng, 13);
+                
+                var marker = L.marker(myLatLng).addTo(map);
+                
+                L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    maxZoom: 18,
+                    id: 'mapbox/streets-v11',
+                    tileSize: 512,
+                    zoomOffset: -1,
+                    accessToken: "{{mapboxToken}}"
+                }).addTo(map);
 
-                var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 14,
-                disableDefaultUI: true,
-                center: myLatLng,
-                styles: [
-                    {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
-                    {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
-                    {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
-                    {
-                    featureType: 'administrative.locality',
-                    elementType: 'labels.text.fill',
-                    stylers: [{color: '#d59563'}]
-                    },
-                    {
-                    featureType: 'poi',
-                    elementType: 'labels.text.fill',
-                    stylers: [{color: '#d59563'}]
-                    },
-                    {
-                    featureType: 'poi.park',
-                    elementType: 'geometry',
-                    stylers: [{color: '#263c3f'}]
-                    },
-                    {
-                    featureType: 'poi.park',
-                    elementType: 'labels.text.fill',
-                    stylers: [{color: '#6b9a76'}]
-                    },
-                    {
-                    featureType: 'road',
-                    elementType: 'geometry',
-                    stylers: [{color: '#38414e'}]
-                    },
-                    {
-                    featureType: 'road',
-                    elementType: 'geometry.stroke',
-                    stylers: [{color: '#212a37'}]
-                    },
-                    {
-                    featureType: 'road',
-                    elementType: 'labels.text.fill',
-                    stylers: [{color: '#9ca5b3'}]
-                    },
-                    {
-                    featureType: 'road.highway',
-                    elementType: 'geometry',
-                    stylers: [{color: '#746855'}]
-                    },
-                    {
-                    featureType: 'road.highway',
-                    elementType: 'geometry.stroke',
-                    stylers: [{color: '#1f2835'}]
-                    },
-                    {
-                    featureType: 'road.highway',
-                    elementType: 'labels.text.fill',
-                    stylers: [{color: '#f3d19c'}]
-                    },
-                    {
-                    featureType: 'transit',
-                    elementType: 'geometry',
-                    stylers: [{color: '#2f3948'}]
-                    },
-                    {
-                    featureType: 'transit.station',
-                    elementType: 'labels.text.fill',
-                    stylers: [{color: '#d59563'}]
-                    },
-                    {
-                    featureType: 'water',
-                    elementType: 'geometry',
-                    stylers: [{color: '#17263c'}]
-                    },
-                    {
-                    featureType: 'water',
-                    elementType: 'labels.text.fill',
-                    stylers: [{color: '#515c6d'}]
-                    },
-                    {
-                    featureType: 'water',
-                    elementType: 'labels.text.stroke',
-                    stylers: [{color: '#17263c'}]
-                    }
-                ]
-                });
-
-                var marker = new google.maps.Marker({
-                position: myLatLng,
-                map: map,
-                title: 'Hello'
-                });
             }
         </script>
-        <script src="https://maps.googleapis.com/maps/api/js?key={your_api_key}&callback=initMap" async defer></script>
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+        <script> initMap(); </script>
     </body>
 </html>
