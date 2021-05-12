@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <!-- Meta Tag -->
+        <meta charset="utf-8">
+        <meta name="description" content="Contact Form">
+        <meta name="keywords" content="Nodejs,UIkit,Nodemailer,Expressjs">
+        <meta name="author" content="Author">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Title -->
+        <title>Contactez Nous</title>
+
+        <!-- Font -->
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="/public/css/darkSky.css">
+        <link rel="stylesheet" href="/public/css/fontawesome.min.css">
+         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+        
+    </head>
+    <body>
+
+        <!-- Container -->
+        <div class="container">
+            <div class="row justify-content-center">
+
+                <!-- Left Column -->
+                <div class="col-lg-4 left-column">
+
+                    <div class="tittle-container">
+                        <h2 class="tittle">Bienvenue</h2>
+                        <h4 class="subtitle">Formulaire de contact de {{{siteName}}}</h4>
+                        
+                    </div>
+
+                    <!-- Form -->
+                    {{{msg}}}
+                    
+                    <h3>Nos contacts</h3>
+                        <p><i class="fas fa-map-marker-alt"></i>&nbsp; {{{siteAdress}}}</p>
+                        <p><i class="fas fa-phone-alt"></i>&nbsp; {{{sitePhone}}}</p>
+                        <p><i class="fas fa-envelope"></i>&nbsp; {{{siteEmail}}}</p>
+                    
+
+                    <!-- Social -->
+                    {{!--<div class="social">
+                        <div class="text-center center-block">
+                            <a href="#"><i class="icon fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="icon fab fa-twitter"></i></i></a>
+                            <a href="#"><i class="icon fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>--}}
+                </div>
+                <!-- End Left Column -->
+
+                <!-- Right Column -->
+
+                <div class="col-lg-6 right-column embed-responsive embed-responsive-16by9">
+                    <div id="map" class="embed-responsive-item"></div>
+                </div>
+
+                <!-- End Right Coloumn -->
+
+            </div>
+        </div>
+        
+        <!-- JavaScript -->
+        <script>
+            var map;
+            function initMap() {
+                var myLatLng = [{{coordinates.lat}}, {{coordinates.long}}];
+                
+                var map = L.map('map').setView(myLatLng, 13);
+                
+                var marker = L.marker(myLatLng).addTo(map);
+                
+                L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    maxZoom: 18,
+                    id: 'mapbox/streets-v11',
+                    tileSize: 512,
+                    zoomOffset: -1,
+                    accessToken: "{{mapboxToken}}"
+                }).addTo(map);
+
+            }
+        </script>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+        <script> initMap(); </script>
+    </body>
+</html>
