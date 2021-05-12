@@ -12,6 +12,12 @@ body {
     font-family: 'Raleway', sans-serif;
 }
 
+
+a:hover {
+   cursor: pointer;
+   color: #00adb5!important;
+}
+
 a i {
     color: #FFFFFF;
 }
@@ -112,6 +118,10 @@ a i:hover {
     height: 100%;
     width: 100%;
     background-color: #FFFFFF;
+}
+
+#copied {
+display: none;
 }
 
 /* ==================================

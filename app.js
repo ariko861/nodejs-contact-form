@@ -9,24 +9,68 @@ const config = require('./config');
 const fields = require('./fields');
 const db = require('./db');
 const converter = require('json-2-csv');
+//const { auth, requiresAuth } = require('express-openid-connect');
+
 
 const i18n = new I18n({
   locales: ['en', 'fr'],
   directory: path.join(__dirname, 'locales')
 })
 
-console.log(fields[0]);
+// Alert if successfully sending email
+const successAlert = `
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+Votre formulaire a bien été pris en compte !
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
+</div>
+`;
+
+// Alert if failed to sending email
+const failAlert = `
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+Échec lors de l'envoi du message, veuillez réessayer plus tard.
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
+</div>
+`;
+
+const unAuthorizedAlert = `
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+Vous n'êtes pas autorisés.
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
+</div>
+`;
 
 // Set Package
 const app = express();
 
 db.createBookingTable();
+db.createLinksTable();
 
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+
+// To use openid connect
+// if (config.openIDUse) {
+//     app.use(
+//         auth({
+//             issuerBaseURL: 'https://login.komputilo.fr',
+//             baseURL: 'https://YOUR_APPLICATION_ROOT_URL',
+//             clientID: 'YOUR_CLIENT_ID',
+//             secret: 'LONG_RANDOM_STRING',
+//             idpLogout: true,
+//             authRequired: false,
+//         })
+//     );
+// }
 
 // Server Start Notification
 app.listen(3000, () => console.log("Server Started on port 3000..."));
@@ -44,6 +88,10 @@ fields.forEach((item, index) => {
 });
 
 var renderVariables = {
+    siteName: config.siteName,
+    siteAdress: config.siteAdress,
+    siteEmail: config.siteEmail,
+    sitePhone:config.sitePhone,
     coordinates: {
         lat: config.mapLatitude,
         long: config.mapLongitude
@@ -55,7 +103,22 @@ var renderVariables = {
 
 // Get Index Page Request
 app.get ('/', (req, res) => {
-    res.render(config.theme, renderVariables);
+    
+    if ( req.query && req.query.id ) {
+        db.getLink(req.query.id, (err, row) => {
+            if (err) { 
+                console.error(err);
+                res.render('home', {msg: failAlert});
+            } else if (row) {
+                renderVariables.hash = row.linkid;
+                res.render('contact', renderVariables)
+            } else {
+                res.render('home', {msg: unAuthorizedAlert});
+            }
+        });
+    } else {
+        res.render('home', renderVariables);
+    }
 });
 
 app.get ('/admin', (req, res) => {
@@ -67,12 +130,22 @@ app.get ('/admin', (req, res) => {
     res.render("admin", { methods: methods });
 });
 
+app.get('/admin/newlink', (req, res) => {
+    db.createNewLink((err, hash) => {
+        if (err) {
+            console.error(err)
+        } else {
+            var link = config.webAdress + "?id=" + hash;
+            res.json({link: link});
+        }
+    });
+    
+});
+
 app.post('/admin', (req, res) => {
     db.getBookings(req.body.method, req.body.beginDate, req.body.endDate, (err, list) => {
         if (err) console.error(err);
         else {
-            console.log('OK');
-            //const csv = parse(list, columns);
             converter.json2csv(list, (err, csv) => {
                 if (err) console.error(err);                
                 else {
@@ -106,30 +179,11 @@ app.post('/send', (req, res) => {
         <p>Une réservation a été faite sur le formulaire de contact !</p>
         <h3>Détails</h3>`;
         
+        output += '<p>Numéro de la réservation: ' + req.body.hash + '</p>';
+        
         fields.forEach( (item, index) => {
             output += '<p>' + item.label + `: ${req.body[item.name]}</p>`;
         });
-
-
-    // Alert if successfully sending email
-    const successAlert = `
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                Votre formulaire a bien été pris en compte !
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                </button>
-        </div>
-    `;
-
-    // Alert if failed to sending email
-    const failAlert = `
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                Échec lors de l'envoi du message, veuillez réessayer plus tard.
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                </button>
-        </div>
-    `;
 
 
     // Create reusable transporter object using the default SMTP transport
@@ -144,10 +198,7 @@ app.post('/send', (req, res) => {
             requireTLS: true
     });
 
-    // Use this is you want to use Gmail SMTP
-//     let transporter = nodemailer.createTransport(
-//             `smtps://${config.user}:${config.pass}@smtp.gmail.com`
-//     );
+
 
     // Setup email settings
     let mailOptions = {
@@ -158,19 +209,37 @@ app.post('/send', (req, res) => {
     };
     
     if ( req.body.email ) mailOptions.replyTo = req.body.email;
-
-    // Send mail with defined transport object
-    db.insertBooking(req.body, () => {
+    
+    db.getLink(req.body.hash, (err, row) => {
         if (err) {
-            console.log(err)
-            res.render(config.theme, {msg: failAlert});
-        } else {
-            transporter.sendMail(mailOptions, (error, info) => {
-                    if (error) {
-                            res.render(config.theme, {msg: failAlert});
-                    }
-                    res.render(config.theme, {msg: successAlert});
+            console.error(err);
+            res.render('contact', {msg: failAlert});
+        } else if (row) {
+            db.insertBooking(req.body, () => {
+                if (err) {
+                    console.error(err)
+                    res.render('contact', {msg: failAlert});
+                } else {
+                    db.deleteLink(req.body.hash, (err) => {
+                        if (err) {
+                            console.error(err);
+                            res.render('contact', {msg: failAlert});
+                        } else {
+                            transporter.sendMail(mailOptions, (error, info) => {
+                                    if (error) {
+                                            console.error(err);
+                                            res.render('contact', {msg: failAlert});
+                                    } else {
+                                        console.info(info);
+                                        res.render('contact', {msg: successAlert});
+                                    }
+                            });
+                        }
+                    });
+                }
             });
+        } else {
+            res.render('contact', {msg: unAuthorizedAlert});
         }
     });
 });

@@ -1,6 +1,6 @@
 const sqlite3 = require('sqlite3');
 const fields = require('./fields');
-
+const crypto = require('crypto');
 
 const db = new sqlite3.Database('bookings.db', function(err){
     if (err) {
@@ -12,7 +12,7 @@ const db = new sqlite3.Database('bookings.db', function(err){
 
 var dbSchema = `CREATE TABLE IF NOT EXISTS Bookings ( `;
 
-dbSchema += 'contactdate text, '; // to register the date the form was made.
+dbSchema += 'hashid text NOT NULL PRIMARY KEY, contactdate text, '; // to register the date the form was made.
 
 fields.forEach((item, index) => {
     dbSchema += item.name + ' text';
@@ -20,7 +20,8 @@ fields.forEach((item, index) => {
     dbSchema += finale;
 });
 
-console.log(dbSchema);
+
+linksSchema = `CREATE TABLE IF NOT EXISTS Links (linkid text NOT NULL PRIMARY KEY);`;
 
 module.exports = {
   
@@ -32,6 +33,49 @@ module.exports = {
         });
     },
     
+    createLinksTable: () => {
+        db.exec(linksSchema, (err) => {
+            if (err) {
+                console.error(err);
+            }
+        });
+    },
+    
+    
+    createNewLink: (callback) => {
+      var hash = crypto.randomBytes(20).toString('hex');
+      db.run("INSERT INTO Links (linkid) VALUES ($hash)", {
+          $hash: hash
+      }, (err) => {
+          if (err) callback(err)
+          else callback("", hash);
+      });        
+    },
+    
+    getLink: (hash, callback) => {
+        db.get("SELECT * FROM Links WHERE linkid = $hash", {
+            $hash: hash
+        }, (err, row) => {
+            if (err) callback(err);
+            else callback("", row);
+                
+        });
+            
+    },
+    
+    deleteLink: (hash, callback) => {
+        db.run("DELETE FROM Links WHERE linkid = $hash", {
+            $hash: hash
+        }, (err) => {
+            if (err) callback(err);
+            else {
+                callback();
+                console.log(hash + " deleted");
+            }
+        });
+        
+    },
+    
     insertBooking: (form, callback) => {
         var todayRaw = new Date().toJSON();
         today = todayRaw.substring(0, 10);
@@ -39,7 +83,7 @@ module.exports = {
         var columns = "";
         var values = "";
         var points = "";
-        var valArray = [today];
+        var valArray = [form.hash, today];
         fields.forEach((item, index) => {
             if ( form[item.name] ){
                 columns += (index === 0) ? "":", "
@@ -50,15 +94,15 @@ module.exports = {
             }
         });
         
-        var dbCommand = "INSERT INTO Bookings (contactdate, " + columns + ") VALUES (? , " + points + ")";
+        var dbCommand = "INSERT INTO Bookings (hashid, contactdate, " + columns + ") VALUES (?, ? , " + points + ")";
         var stmt = db.prepare(dbCommand);
 
         stmt.run(valArray, (err) => {
             if (err) callback(err);
-                 else callback();
+            else callback();
         });
     },
-    //method + " < '" + endDate + " 23:59:59' AND " +
+    
     getBookings: (method, beginDate, endDate, callback) => {
         var query = "SELECT * FROM Bookings WHERE " +  method + " BETWEEN '" + beginDate +"' AND '" + endDate + "'";
         db.all(query, (err, list) => {

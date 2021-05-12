@@ -3,10 +3,18 @@ require('dotenv').config();
 module.exports = {
     // Theme
     theme: "darkSky",
-
+    
+    webAdress: process.env.WEB_ADRESS,
+    
+    openIDUse: process.env.OPENID_USE,
+    
+    siteName: process.env.SITE_NAME,
+    siteAdress: process.env.SITE_ADRESS,
+    siteEmail: process.env.SITE_EMAIL,
+    sitePhone: process.env.SITE_PHONE,
+    
     mapLatitude: process.env.MAP_LATITUDE, // latitude and longitude for the map
     mapLongitude: process.env.MAP_LONGITUDE,
-    
     mapboxToken: process.env.MAPBOX_TOKEN,
     
     // Email notifier account (sender)
