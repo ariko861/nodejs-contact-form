@@ -7,7 +7,7 @@ body {
         rgba(0, 0, 0, 0.3), 
         rgba(0, 0, 0, 0.3)
       ),
-      url('../img/background.jpg');
+      url('../../storage/background.jpg');
     background-size: cover;
     font-family: 'Raleway', sans-serif;
 }

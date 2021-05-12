@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3');
 const fields = require('./fields');
 const crypto = require('crypto');
 
-const db = new sqlite3.Database('bookings.db', function(err){
+const db = new sqlite3.Database('storage/bookings.db', function(err){
     if (err) {
         console.error(err);
         return;
