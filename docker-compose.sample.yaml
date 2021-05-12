@@ -7,23 +7,23 @@ services:
     volumes:
       - ./storage:/app/storage
     #environment:
-      #- WEB_ADRESS="https://example.com"
-      #- SITE_NAME="Site Name"
-      #- SITE_PHONE="+32 20321 103281"
-      #- SITE_ADRESS="PARIS"
-      #- SITE_EMAIL="info@exemple.be"
+      #- WEB_ADRESS=https://example.com
+      #- SITE_NAME=Site Name
+      #- SITE_PHONE=+32 20321 103281
+      #- SITE_ADRESS=PARIS
+      #- SITE_EMAIL=info@exemple.be
 
       #- OPENID_USE=false
-      #- OPENID_LOGIN_ADRESS="https://login.exemple.com"
+      #- OPENID_LOGIN_ADRESS=https://login.exemple.com
 
       #- MAP_LATITUDE=0.000
       #- MAP_LONGITUDE=0.000
-      #- MAPBOX_TOKEN="<your-mapbox-token-here>"
-      #- SMTP_HOST="smtp.exemple.com"
-      #- SMTP_PORT="465"
-      #- SMTP_USER="info@exemple.com"
-      #- SMTP_PASSWORD="<password>"
+      #- MAPBOX_TOKEN=<your-mapbox-token-here>
+      #- SMTP_HOST=smtp.exemple.com
+      #- SMTP_PORT=465
+      #- SMTP_USER=info@exemple.com
+      #- SMTP_PASSWORD=<password>
 
-      #- MAIL_FROM="info@exemple.com"
-      #- MAIL_TO="test@exemple.com"
-      #- MAIL_SUBJECT="Test"
+      #- MAIL_FROM=info@exemple.com
+      #- MAIL_TO=test@exemple.com
+      #- MAIL_SUBJECT=Test
