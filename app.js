@@ -9,7 +9,7 @@ const config = require('./config');
 const fields = require('./fields');
 const db = require('./db');
 const converter = require('json-2-csv');
-//const { auth, requiresAuth } = require('express-openid-connect');
+const { auth, requiresAuth } = require('express-openid-connect');
 
 
 const i18n = new I18n({
@@ -59,18 +59,18 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 // To use openid connect
-// if (config.openIDUse) {
-//     app.use(
-//         auth({
-//             issuerBaseURL: 'https://login.komputilo.fr',
-//             baseURL: 'https://YOUR_APPLICATION_ROOT_URL',
-//             clientID: 'YOUR_CLIENT_ID',
-//             secret: 'LONG_RANDOM_STRING',
-//             idpLogout: true,
-//             authRequired: false,
-//         })
-//     );
-// }
+if (config.openIDUse) {
+    app.use(
+        auth({
+            issuerBaseURL: config.openIDissuer,
+            baseURL: config.webAdress,
+            clientID: 'YOUR_CLIENT_ID',
+            secret: 'LONG_RANDOM_STRING',
+            idpLogout: true,
+            authRequired: false,
+        })
+    );
+}
 
 // Server Start Notification
 app.listen(3000, () => console.log("Server Started on port 3000..."));

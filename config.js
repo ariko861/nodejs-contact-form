@@ -7,7 +7,7 @@ module.exports = {
     webAdress: process.env.WEB_ADRESS,
     
     openIDUse: process.env.OPENID_USE,
-    
+    openIDissuer: process.env.OPENID_LOGIN_ADRESS,
     siteName: process.env.SITE_NAME,
     siteAdress: process.env.SITE_ADRESS,
     siteEmail: process.env.SITE_EMAIL,
