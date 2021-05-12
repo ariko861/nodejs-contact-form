@@ -4,3 +4,4 @@ configTest.js
 node_modules/
 package-lock.json
 bookings.db
+storage/*
