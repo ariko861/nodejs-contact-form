@@ -74,7 +74,7 @@ if (config.openIDUse == "true") {
     };
     let keycloak = new Keycloak({ store: memoryStore }, kcConfig);
     app.use( keycloak.middleware() );
-    var adminRequestOptions.push(keycloak.protect('viale-admin'));
+    adminRequestOptions.push(keycloak.protect('viale-admin'));
 }
 
 // Server Start Notification
