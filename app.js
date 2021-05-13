@@ -9,7 +9,7 @@ const config = require('./config');
 const fields = require('./fields');
 const db = require('./db');
 const converter = require('json-2-csv');
-const { auth, requiresAuth } = require('express-openid-connect');
+const { auth, requiresAuth, claimCheck } = require('express-openid-connect');
 
 
 const i18n = new I18n({
@@ -71,7 +71,10 @@ if (config.openIDUse == "true") {
             authRequired: false,
         })
     );
-    adminRequestOptions.push(requiresAuth());
+    //adminRequestOptions.push(requiresAuth());
+    adminRequestOptions.push(claimCheck((req, claims) => {
+  return claims.isAdmin && claims.roles.includes('viale-admin');
+}));
 }
 
 // Server Start Notification
