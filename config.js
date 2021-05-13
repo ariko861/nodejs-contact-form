@@ -8,6 +8,9 @@ module.exports = {
     
     openIDUse: process.env.OPENID_USE,
     openIDissuer: process.env.OPENID_LOGIN_ADRESS,
+    openIDclientID: process.env.OPENID_CLIENTID,
+    openIDsecret: process.env.OPENID_SECRET,
+    
     siteName: process.env.SITE_NAME,
     siteAdress: process.env.SITE_ADRESS,
     siteEmail: process.env.SITE_EMAIL,

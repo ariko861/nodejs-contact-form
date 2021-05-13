@@ -65,9 +65,8 @@ if (config.openIDUse == "true") {
         auth({
             issuerBaseURL: config.openIDissuer,
             baseURL: config.webAdress,
-            clientID: 'YOUR_CLIENT_ID',
-            secret: 'LONG_RANDOM_STRING',
-            idpLogout: true,
+            clientID: config.openIDclientID,
+            secret: config.openIDsecret,
             authRequired: false,
         })
     );
