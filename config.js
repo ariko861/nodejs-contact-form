@@ -12,6 +12,11 @@ module.exports = {
     openIDsecret: process.env.OPENID_SECRET,
     openIDclientSecret: process.env.OPENID_CLIENTSECRET,
     
+    keycloakclientID: process.env.KEYCLOAK_CLIENTID,
+    keycloakURL:process.env.KEYCLOAK_URL,
+    keycloakRealm: process.env.KEYCLOAK_REALM,
+    kcRealmPublicKey: process.env.KEYCLOAK_REALMPUBLICKEY,
+    
     siteName: process.env.SITE_NAME,
     siteAdress: process.env.SITE_ADRESS,
     siteEmail: process.env.SITE_EMAIL,

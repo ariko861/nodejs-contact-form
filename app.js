@@ -9,7 +9,11 @@ const config = require('./config');
 const fields = require('./fields');
 const db = require('./db');
 const converter = require('json-2-csv');
-const { auth, requiresAuth, claimCheck } = require('express-openid-connect');
+const session = require('express-session');
+const Keycloak = require('keycloak-connect');
+
+var memoryStore = new session.MemoryStore();
+var keycloak = new Keycloak({ store: memoryStore });
 
 
 const i18n = new I18n({
@@ -61,20 +65,16 @@ app.use(bodyParser.json())
 var adminRequestOptions = [];
 // To use openid connect
 if (config.openIDUse == "true") {
-    app.use(
-        auth({
-            issuerBaseURL: config.openIDissuer,
-            baseURL: config.webAdress,
-            clientID: config.openIDclientID,
-            secret: config.openIDsecret,
-            clientSecret: config.openIDclientSecret,
-            authRequired: false,
-        })
-    );
-    //adminRequestOptions.push(requiresAuth());
-    adminRequestOptions.push(claimCheck((req, claims) => {
-  return claims.isAdmin && claims.roles.includes('viale-admin');
-}));
+    let kcConfig = {
+        clientId: config.keycloakclientID,
+        serverUrl: config.keycloakURL,
+        realm: config.keycloakRealm,
+        realmPublicKey: config.kcRealmPublicKey,
+        
+    };
+    let keycloak = new Keycloak({ store: memoryStore }, kcConfig);
+    app.use( keycloak.middleware() );
+    var adminRequestOptions.push(keycloak.protect('viale-admin'));
 }
 
 // Server Start Notification
