@@ -58,8 +58,9 @@ app.set('view engine', 'handlebars');
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
+var adminRequestOptions = [];
 // To use openid connect
-if (config.openIDUse) {
+if (config.openIDUse == "true") {
     app.use(
         auth({
             issuerBaseURL: config.openIDissuer,
@@ -70,6 +71,7 @@ if (config.openIDUse) {
             authRequired: false,
         })
     );
+    adminRequestOptions.push(requiresAuth());
 }
 
 // Server Start Notification
@@ -121,7 +123,8 @@ app.get ('/', (req, res) => {
     }
 });
 
-app.get ('/admin', (req, res) => {
+
+app.get('/admin', adminRequestOptions, (req, res) => {
     
     let methods = [];
     fields.forEach((item, index) => {
@@ -130,7 +133,7 @@ app.get ('/admin', (req, res) => {
     res.render("admin", { methods: methods });
 });
 
-app.get('/admin/newlink', (req, res) => {
+app.get('/admin/newlink', adminRequestOptions, (req, res) => {
     db.createNewLink((err, hash) => {
         if (err) {
             console.error(err)
@@ -142,7 +145,7 @@ app.get('/admin/newlink', (req, res) => {
     
 });
 
-app.post('/admin', (req, res) => {
+app.post('/admin', adminRequestOptions, (req, res) => {
     db.getBookings(req.body.method, req.body.beginDate, req.body.endDate, (err, list) => {
         if (err) console.error(err);
         else {
