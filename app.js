@@ -71,10 +71,10 @@ if (config.openIDUse == "true") {
             authRequired: false,
         })
     );
-    //adminRequestOptions.push(requiresAuth());
-    adminRequestOptions.push(claimCheck((req, claims) => {
-  return claims.isAdmin && claims.roles.includes('viale-admin');
-}));
+    adminRequestOptions.push(requiresAuth());
+//     adminRequestOptions.push(claimCheck((req, claims) => {
+//   return claims.isAdmin && claims.roles.includes('viale-admin');
+// }));
 }
 
 // Server Start Notification
