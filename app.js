@@ -67,6 +67,7 @@ if (config.openIDUse == "true") {
             baseURL: config.webAdress,
             clientID: config.openIDclientID,
             secret: config.openIDsecret,
+            clientSecret: config.openIDclientSecret,
             authRequired: false,
         })
     );

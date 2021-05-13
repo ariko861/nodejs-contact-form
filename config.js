@@ -10,6 +10,7 @@ module.exports = {
     openIDissuer: process.env.OPENID_LOGIN_ADRESS,
     openIDclientID: process.env.OPENID_CLIENTID,
     openIDsecret: process.env.OPENID_SECRET,
+    openIDclientSecret: process.env.OPENID_CLIENTSECRET,
     
     siteName: process.env.SITE_NAME,
     siteAdress: process.env.SITE_ADRESS,
