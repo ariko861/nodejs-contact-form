@@ -1,8 +1,8 @@
 [
     {
-        "label": "Nom",
+        "label": "Nom complet",
         "name": "name",
-        "placeholder": "Saisissez votre nom",
+        "placeholder": "Saisissez votre nom complet",
         "type": "text",
         "required": true
     },
