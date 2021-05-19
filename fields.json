@@ -28,6 +28,14 @@
         "notBeforeToday": true
     },
     {
+        "label": "Quel montant souhaiteriez vous verser par nuitée ? ( selon vos moyens )",
+        "name": "price",
+        "type": "radio",
+        "options": ["11€", "15€"],
+        "radio": true,
+        "required": true
+    },
+    {
         "label": "Message",
         "name": "message",
         "placeholder": "Saisissez un message si vous le souhaitez",

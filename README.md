@@ -37,30 +37,17 @@ module.exports = {
     subject: 'Contact Us', // Subject
 };
 ```
+### Config the fields with fields.json
 
-### Gmail SMTP Setup
-1. Setup  [app password for gmail](https://support.google.com/accounts/answer/185833?hl=en)
-2. Open app.js and change
-```javascript
-let transporter = nodemailer.createTransport({
-        host:  config.host,
-        port: config.port,
-        secure: false,
-        auth: {
-                user: config.user,
-                pass: config.pass
-        },
-        tls:{
-            rejectUnauthorized:false
-        }
-});
 ```
-
-3. replace to
-```javascript
-let transporter = nodemailer.createTransport(
-    `smtps://${config.user}:${config.pass}@smtp.gmail.com`
-);
+    {
+        "label": "Quel montant souhaiteriez vous payer ? ( selon vos moyens )",
+        "name": "price",
+        "type": "select",
+        "options": ["11€", "15€"], ( only for "select" or "radio" )
+        "select": true, ( can be "textarea" or "radio" )
+        "required": true
+    },
 ```
 
 ### Theme Screenshoot

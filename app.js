@@ -52,6 +52,7 @@ const app = express();
 db.createBookingTable();
 db.createLinksTable();
 
+
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
 
