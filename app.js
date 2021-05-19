@@ -211,6 +211,8 @@ app.post('/send', (req, res) => {
     let mailOptions = {
             from: config.from,
             to: config.to,
+            cc: config.cc,
+            bcc: config.bcc,
             subject: config.subject,
             html: output
     };

@@ -30,5 +30,8 @@ module.exports = {
     // Your email to receive notification (receiver)  
     from: process.env.MAIL_FROM, // Sender email address
     to: process.env.MAIL_TO, // Your email address
+    cc: process.env.MAIL_CC, // Your email address
+    bcc: process.env.MAIL_BCC, // Your email address
     subject: process.env.MAIL_SUBJECT, // Subject
+    
 };
