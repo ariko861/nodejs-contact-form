@@ -110,5 +110,27 @@ module.exports = {
             else callback("", list);
         });
         
+    },
+    
+    getOneBooking: (id, callback) => {
+        db.get("SELECT * FROM Bookings WHERE hashid = $id", {
+            $id: id
+        }, (err, row) => {
+            if (err) callback(err);
+            else callback("", row);
+                
+        });
+    },
+    
+    deleteBooking:(id, callback) => {
+        db.run("DELETE FROM Bookings WHERE hashid = $id", {
+            $id: id
+        }, (err) => {
+            if (err) callback(err);
+            else {
+                callback();
+                
+            }
+        });
     }
 }

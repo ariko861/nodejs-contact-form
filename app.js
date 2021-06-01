@@ -149,6 +149,27 @@ app.get('/admin/newlink', adminRequestOptions, (req, res) => {
     
 });
 
+app.post('/admin/cancelreservation', adminRequestOptions, (req,res) => {
+    
+    db.getOneBooking(req.body.reservationID, (err, row) => {
+        if (err) {
+           console.error(err);
+           res.status(401).json({result:"Il y a eu une erreur avec la base de données", type:"error"})
+        } else if (row) {
+            db.deleteBooking(req.body.reservationID, (err) => {
+                if (err) {
+                    console.error(err);
+                    res.status(401).json({result: "Il y a eu une erreur avec la base de données", type:"error"});
+                } else {
+                    res.json({result: "La réservation de " + row.name + " a bien été supprimée", type: "success"});
+                }
+            });
+        } else {
+            res.json({result: "Cette réservation n'existe pas", type:"error"});
+        }
+    });
+});
+
 app.post('/admin', adminRequestOptions, (req, res) => {
     db.getBookings(req.body.method, req.body.beginDate, req.body.endDate, (err, list) => {
         if (err) console.error(err);
