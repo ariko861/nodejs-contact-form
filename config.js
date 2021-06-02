@@ -16,6 +16,7 @@ module.exports = {
     siteAdress: process.env.SITE_ADRESS,
     siteEmail: process.env.SITE_EMAIL,
     sitePhone: process.env.SITE_PHONE,
+    matrixLink: process.env.MATRIX_LINK,
     
     mapLatitude: process.env.MAP_LATITUDE, // latitude and longitude for the map
     mapLongitude: process.env.MAP_LONGITUDE,

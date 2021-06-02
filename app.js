@@ -97,6 +97,7 @@ var renderVariables = {
     siteName: config.siteName,
     siteAdress: config.siteAdress,
     siteEmail: config.siteEmail,
+    matrixLink: config.matrixLink,
     sitePhone:config.sitePhone,
     coordinates: {
         lat: config.mapLatitude,
