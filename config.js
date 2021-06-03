@@ -18,6 +18,8 @@ module.exports = {
     sitePhone: process.env.SITE_PHONE,
     matrixRoom: process.env.MATRIX_ROOM,
     
+    sendIcs: process.env.SEND_ICS, //wether an ics file should be sent
+    
     mapLatitude: process.env.MAP_LATITUDE, // latitude and longitude for the map
     mapLongitude: process.env.MAP_LONGITUDE,
     mapboxToken: process.env.MAPBOX_TOKEN,

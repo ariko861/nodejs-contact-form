@@ -9,6 +9,7 @@ const config = require('./config');
 const fields = require('./fields');
 const db = require('./db');
 const converter = require('json-2-csv');
+const ics = require('ics-plus');
 const { auth, requiresAuth, claimCheck } = require('express-openid-connect');
 
 
@@ -208,10 +209,10 @@ app.post('/send', (req, res) => {
         <p>Une réservation a été faite sur le formulaire de contact !</p>
         <h3>Détails</h3>`;
         
-        output += '<p>Numéro de la réservation: ' + req.body.hash + '</p>';
+        output += '<p><b>Numéro de la réservation:</b> ' + req.body.hash + '</p>';
         
         fields.forEach( (item, index) => {
-            output += '<p>' + item.label + `: ${req.body[item.name]}</p>`;
+            output += '<p><b>' + item.label + `</b>: ${req.body[item.name]}</p>`;
         });
 
 
@@ -241,36 +242,101 @@ app.post('/send', (req, res) => {
     
     if ( req.body.email ) mailOptions.replyTo = req.body.email;
     
+     // IS ICS ACTIVATED
+    if ( config.sendIcs == "true" ) {
+       
+        var arrivalEvent = {};
+        var departureEvent = {};
+        const toNumbers = arr => arr.map(Number);
+        // CREATE AN ICS FILE IF ARRIVALDATE
+        if ( req.body.arrivaldate ) {
+            let arrivalDate = req.body.arrivaldate.split("-");
+            arrivalDate = toNumbers(arrivalDate);
+            arrivalEvent = {
+                start: [ arrivalDate[0], arrivalDate[1], arrivalDate[2] ],
+                 end: [ arrivalDate[0], arrivalDate[1], arrivalDate[2] + 1 ],
+                 title: "Arrivée " + req.body.name,
+                 description: "Contacter " + req.body.email,
+                 categories: ["Arrivées Viale"],
+                 status: "CONFIRMED",
+                 
+            }
+        }
+        
+        if ( req.body.departuredate ) {
+            let departureDate = req.body.departuredate.split("-");
+            departureDate = toNumbers(departureDate);
+            departureEvent = {
+                start: [ departureDate[0], departureDate[1], departureDate[2] ],
+                 end: [ departureDate[0], departureDate[1], departureDate[2] + 1 ],
+                 title: "Départ " + req.body.name,
+                 description: "Contacter " + req.body.email,
+                 categories: ["Départs Viale"],
+                 status: "CONFIRMED",
+                 
+            }
+        }
+    }
+    
+    let sendFail = (err) => {
+        console.error(err);
+        renderVariables.msg = failAlert;
+        res.render('home', renderVariables);
+    };
+    
+    let sendSuccess = () => {
+        renderVariables.msg = successAlert;
+        res.render('home', renderVariables);
+    };
+    
     db.getLink(req.body.hash, (err, row) => {
         if (err) {
-            console.error(err);
-            res.render('contact', {msg: failAlert});
+            sendFail(err);
         } else if (row) {
             db.insertBooking(req.body, () => {
                 if (err) {
-                    console.error(err)
-                    res.render('contact', {msg: failAlert});
+                    sendFail(err);
                 } else {
                     db.deleteLink(req.body.hash, (err) => {
-                        if (err) {
-                            console.error(err);
-                            res.render('contact', {msg: failAlert});
+                        if (err) console.error(err);
+                        if ( config.sendIcs ) {
+                            ics.createEvents([arrivalEvent, departureEvent], (error, attachment) => {
+                                if (error) console.log(error);
+                                else {
+                                    mailOptions.attachments = [
+                                        {
+                                            filename: 'reservation.ics',
+                                            content: attachment
+                                        }
+                                    ];
+                                    transporter.sendMail(mailOptions, (error, info) => {
+                                        if (error) {
+                                            sendFail(error);
+                                        } else {
+                                            sendSuccess();
+                                        }
+                                    });
+                                    
+                                }
+                            });
+                                                             
                         } else {
                             transporter.sendMail(mailOptions, (error, info) => {
-                                    if (error) {
-                                            console.error(err);
-                                            res.render('contact', {msg: failAlert});
-                                    } else {
-                                        console.info(info);
-                                        res.render('contact', {msg: successAlert});
-                                    }
+                                if (error) {
+                                    sendFail(error);
+                                } else {
+                                    sendSuccess();
+                                }
                             });
                         }
+                        
+                                                                            
                     });
                 }
             });
         } else {
-            res.render('contact', {msg: unAuthorizedAlert});
+            renderVariables.msg = unAuthorizedAlert;
+            res.render('home', renderVariables);
         }
     });
 });
