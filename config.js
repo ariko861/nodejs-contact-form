@@ -18,6 +18,10 @@ module.exports = {
     sitePhone: process.env.SITE_PHONE,
     matrixRoom: process.env.MATRIX_ROOM,
     
+    cartebancaire: process.env.CARTEBANCAIRE,
+    cash: process.env.CASH,
+    iban: process.env.IBAN,
+    
     sendIcs: process.env.SEND_ICS, //wether an ics file should be sent
     
     mapLatitude: process.env.MAP_LATITUDE, // latitude and longitude for the map

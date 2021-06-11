@@ -39,5 +39,14 @@
 	"La réservation de %s a bien été supprimée": "La réservation de %s a bien été supprimée",
 	"Cette réservation n'existe pas": "Cette réservation n'existe pas",
 	"La requête a échoué.": "La requête a échoué.",
-	"Créer un autre lien": "Créer un autre lien"
+	"Créer un autre lien": "Créer un autre lien",
+	"Ce lien d'inscription n'est pas valide": "Ce lien d'inscription n'est pas valide",
+	"Le coût total de votre réservation est de %s €": "Le coût total de votre réservation est de %s €",
+	"Vous pouvez régler :": "Vous pouvez régler :",
+	"sur place par carte bancaire": "sur place par carte bancaire",
+	"sur place en espèces": "sur place en espèces",
+	"par virement sur le compte %s": "par virement sur le compte %s",
+	"par virement sur le compte %1, en mentionnant votre nom et votre numéro de réservation %2": "par virement sur le compte %1, en mentionnant votre nom et votre numéro de réservation %2",
+	"par virement sur le compte %s, en mentionnant votre nom et votre numéro de réservation %s": "par virement sur le compte %s, en mentionnant votre nom et votre numéro de réservation %s",
+	"Le lien a été copié !": "Le lien a été copié !"
 }

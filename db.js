@@ -12,7 +12,7 @@ const db = new sqlite3.Database('storage/bookings.db', function(err){
 
 var dbSchema = `CREATE TABLE IF NOT EXISTS Bookings ( `;
 
-dbSchema += 'hashid text NOT NULL, contactdate text, '; // to register the date the form was made.
+dbSchema += 'hashid text NOT NULL, contactdate text, totalcost integer, '; // to register the date the form was made.
 
 fields.forEach((item, index) => {
     dbSchema += item.name + ' text';
@@ -92,13 +92,13 @@ module.exports = {
             points += "?";
         });
         
-        var dbCommand = "INSERT INTO Bookings (hashid, contactdate, " + columns + ") VALUES (?, ? , " + points + ")";
+        var dbCommand = "INSERT INTO Bookings (hashid, contactdate, totalcost, " + columns + ") VALUES (?, ? , ? , " + points + ")";
         var stmt = db.prepare(dbCommand);
         
         if ( form.persons ) {
             var dbValues = [];
             for ( i=0 ; i < form.persons.length ; i++ ) {
-                let personValue = [form.hash, today]
+                let personValue = [form.hash, today, form.totalCost]
                 fields.forEach((item, index) => {
                     if ( item.multiple ) {
                         if ( form.persons[i][item.name]) {
@@ -123,7 +123,7 @@ module.exports = {
             
             
         } else {
-            var dbValues = [form.hash, today]
+            var dbValues = [form.hash, today, form.totalCost]
             fields.forEach((item, index) => {
                 if ( form[item.name] ){
                     dbValues.push(form[item.name]);

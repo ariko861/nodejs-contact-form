@@ -120,6 +120,22 @@ var renderVariables = {
     today: today
 }
 
+const calculReservationCost = (reservation) => {
+    let dateA = new Date(reservation.arrivaldate);
+    let dateB = new Date(reservation.departuredate);
+    var diff = Math.abs(dateB - dateA);
+    var diffDays = Math.floor(diff / 86400000);
+    let totalCost = 0;
+    if ( reservation.persons ) {
+        reservation.persons.forEach( (person, index) => {
+            totalCost += diffDays * Number(person.price.slice(0, -1));
+        });
+    } else {
+        totalCost = diffDays * Number(reservation.price.slice(0, -1));
+    }
+    return totalCost;
+};
+
 // Get Index Page Request
 app.get ('/', (req, res) => {
     
@@ -282,7 +298,9 @@ app.post('/send', (req, res) => {
             });
         }
         
+        reservation.totalCost = calculReservationCost(reservation);
         
+        output += '<p><b>Coût du séjour</b>: ' + reservation.totalCost +'€</p>';
         
         // Create reusable transporter object using the default SMTP transport
         let transporter = nodemailer.createTransport({
@@ -368,6 +386,13 @@ app.post('/send', (req, res) => {
         
         let sendSuccess = () => {
             renderVariables.msg = successAlert(res.__("Votre formulaire a bien été pris en compte") + " !");
+            renderVariables.msg += "<p>" + res.__("Le coût total de votre réservation est de %s €", reservation.totalCost ) + "</p>";
+            renderVariables.msg += "<p>" + res.__("Vous pouvez régler :") + "</p><ul>";
+            if ( config.cartebancaire ) renderVariables.msg += "<li>" + res.__("sur place par carte bancaire") + "</li>";
+            if ( config.cash ) renderVariables.msg += "<li>" + res.__("sur place en espèces") + "</li>";
+            if ( config.iban ) renderVariables.msg += "<li>" + res.__("par virement sur le compte %s, en mentionnant votre nom et votre numéro de réservation %s", config.iban, reservation.hash) + "</li>";
+            renderVariables.msg += "</ul>";
+            
             res.render('home', renderVariables);
         };
         
@@ -417,7 +442,7 @@ app.post('/send', (req, res) => {
                     }
                 });
             } else {
-                renderVariables.msg = unAuthorizedAlert;
+                renderVariables.msg = unAuthorizedAlert(res.__("Ce lien d'inscription n'est pas valide") + " !");
                 res.render('home', renderVariables);
             }
         });
