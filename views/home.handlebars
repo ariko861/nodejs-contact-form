@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <!-- Title -->
-        <title>Contactez Nous</title>
+        <title>{{{siteName}}}</title>
 
         <!-- Font -->
 
@@ -31,15 +31,15 @@
                 <div class="col-lg-4 left-column">
 
                     <div class="tittle-container">
-                        <h2 class="tittle">Bienvenue</h2>
-                        <h4 class="subtitle">Formulaire de contact de {{{siteName}}}</h4>
+                        <h2 class="tittle">{{{__ 'Bienvenue à %s' siteName }}}</h2>
+                        <h4 class="subtitle">{{{__ "Contactez nous pour recevoir votre formulaire d'inscription" }}}</h4>
                         
                     </div>
 
                     <!-- Form -->
                     {{{msg}}}
                     
-                    <h3>Pour nous contacter:</h3>
+                    <h3>{{{__ "Pour nous contacter" }}}:</h3>
                         <p><i class="fas fa-map-marker-alt"></i>&nbsp; {{{siteAdress}}}</p>
                         <p><i class="fas fa-phone-alt"></i>&nbsp; {{{sitePhone}}}</p>
                         <p><i class="fas fa-envelope"></i>&nbsp; {{{siteEmail}}}</p>

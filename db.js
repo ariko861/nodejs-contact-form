@@ -12,7 +12,7 @@ const db = new sqlite3.Database('storage/bookings.db', function(err){
 
 var dbSchema = `CREATE TABLE IF NOT EXISTS Bookings ( `;
 
-dbSchema += 'hashid text NOT NULL PRIMARY KEY, contactdate text, '; // to register the date the form was made.
+dbSchema += 'hashid text NOT NULL, contactdate text, '; // to register the date the form was made.
 
 fields.forEach((item, index) => {
     dbSchema += item.name + ' text';
@@ -43,7 +43,8 @@ module.exports = {
     
     
     createNewLink: (callback) => {
-      var hash = crypto.randomBytes(20).toString('hex');
+      //var hash = crypto.randomBytes(20).toString('hex');
+      var hash = Date.now().toString();
       db.run("INSERT INTO Links (linkid) VALUES ($hash)", {
           $hash: hash
       }, (err) => {
@@ -70,7 +71,6 @@ module.exports = {
             if (err) callback(err);
             else {
                 callback();
-                console.log(hash + " deleted");
             }
         });
         
@@ -83,24 +83,59 @@ module.exports = {
         var columns = "";
         var values = "";
         var points = "";
-        var valArray = [form.hash, today];
+        //var valArray = [form.hash, today];
+        
         fields.forEach((item, index) => {
-            if ( form[item.name] ){
-                columns += (index === 0) ? "":", "
-                columns += item.name;
-                points += (index === 0) ? "":", "
-                points += "?";
-                valArray.push(form[item.name]);
-            }
+            columns += (index === 0) ? "":", "
+            columns += item.name;
+            points += (index === 0) ? "":", "
+            points += "?";
         });
         
         var dbCommand = "INSERT INTO Bookings (hashid, contactdate, " + columns + ") VALUES (?, ? , " + points + ")";
         var stmt = db.prepare(dbCommand);
-
-        stmt.run(valArray, (err) => {
-            if (err) callback(err);
-            else callback();
-        });
+        
+        if ( form.persons ) {
+            var dbValues = [];
+            for ( i=0 ; i < form.persons.length ; i++ ) {
+                let personValue = [form.hash, today]
+                fields.forEach((item, index) => {
+                    if ( item.multiple ) {
+                        if ( form.persons[i][item.name]) {
+                            personValue.push(form.persons[i][item.name]);
+                        }
+                    } else {
+                        personValue.push(form[item.name]);
+                    }
+                });
+                dbValues.push(personValue);
+            }
+            
+            db.serialize( (err)=> {
+                for ( i=0 ; i < form.persons.length ; i++ ) {
+                    stmt.run(dbValues[i]);
+                }
+                if (err) callback(err);
+                else callback();
+            });
+            
+            
+            
+            
+        } else {
+            var dbValues = [form.hash, today]
+            fields.forEach((item, index) => {
+                if ( form[item.name] ){
+                    dbValues.push(form[item.name]);
+                }
+            });
+            stmt.run(dbValues, (err) => {
+                if (err) callback(err);
+                else callback();
+            });
+        }
+                
+        
     },
     
     getBookings: (method, beginDate, endDate, callback) => {

@@ -14,39 +14,50 @@ const { auth, requiresAuth, claimCheck } = require('express-openid-connect');
 
 
 const i18n = new I18n({
-  locales: ['en', 'fr'],
-  directory: path.join(__dirname, 'locales')
+  locales: ['fr', 'en', 'nl', 'de'],
+  directory: path.join(__dirname, 'locales'),
+  logWarnFn: function (msg) {
+    console.log('warn', msg)
+  },
+  defaultLocale: 'fr',
 })
 
+
+
 // Alert if successfully sending email
-const successAlert = `
+const successAlert = (string) => {
+return `
 <div class="alert alert-success alert-dismissible fade show" role="alert">
-Votre formulaire a bien été pris en compte !
+${string}
 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
 <span aria-hidden="true">&times;</span>
 </button>
 </div>
 `;
+}
 
 // Alert if failed to sending email
-const failAlert = `
-<div class="alert alert-warning alert-dismissible fade show" role="alert">
-Échec lors de l'envoi du message, veuillez réessayer plus tard.
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-<span aria-hidden="true">&times;</span>
-</button>
-</div>
-`;
+const failAlert = (string) => {
+    return `
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    ${string}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+    </div>
+    `;
+}
 
-const unAuthorizedAlert = `
-<div class="alert alert-warning alert-dismissible fade show" role="alert">
-Vous n'êtes pas autorisés.
-<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-<span aria-hidden="true">&times;</span>
-</button>
-</div>
-`;
-
+const unAuthorizedAlert = (string) => {
+    return `
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    ${string}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+    </div>
+    `;
+}
 // Set Package
 const app = express();
 
@@ -119,12 +130,19 @@ app.get ('/', (req, res) => {
                 res.render('home', {msg: failAlert});
             } else if (row) {
                 renderVariables.hash = row.linkid;
+                renderVariables.fields.forEach((item, index) => {
+                    renderVariables.fields[index].label = res.__(item.label);
+                    renderVariables.fields[index].placeholder = res.__(item.placeholder);
+                });
+                renderVariables.msg = "";
                 res.render('contact', renderVariables)
             } else {
-                res.render('home', {msg: unAuthorizedAlert});
+                renderVariables.msg = unAuthorizedAlert(res.__("Vous n'êtes pas autorisés."));
+                res.render('home', renderVariables);
             }
         });
     } else {
+        renderVariables.msg = "";
         res.render('home', renderVariables);
     }
 });
@@ -156,18 +174,18 @@ app.post('/admin/cancelreservation', adminRequestOptions, (req,res) => {
     db.getOneBooking(req.body.reservationID, (err, row) => {
         if (err) {
            console.error(err);
-           res.status(401).json({result:"Il y a eu une erreur avec la base de données", type:"error"})
+           res.status(401).json({result:res.__("Il y a eu une erreur avec la base de données"), type:"error"})
         } else if (row) {
             db.deleteBooking(req.body.reservationID, (err) => {
                 if (err) {
                     console.error(err);
-                    res.status(401).json({result: "Il y a eu une erreur avec la base de données", type:"error"});
+                    res.status(401).json({result: res.__("Il y a eu une erreur avec la base de données"), type:"error"});
                 } else {
-                    res.json({result: "La réservation de " + row.name + " a bien été supprimée", type: "success"});
+                    res.json({result: res.__("La réservation de %s a bien été supprimée", row.name), type: "success"});
                 }
             });
         } else {
-            res.json({result: "Cette réservation n'existe pas", type:"error"});
+            res.json({result: res.__("Cette réservation n'existe pas"), type:"error"});
         }
     });
 });
@@ -189,13 +207,13 @@ app.post('/admin', adminRequestOptions, (req, res) => {
 
 app.get ('/en', (req, res) => {
     i18n.setLocale(res, 'en');
-    res.render(config.theme, renderVariables);
+    res.render('home', renderVariables);
 
 });
 
 app.get ('/fr', (req, res) => {
     i18n.setLocale(res, 'fr');
-    res.render(config.theme, renderVariables);
+    res.render('home', renderVariables);
 
 });
 
@@ -203,140 +221,207 @@ app.get ('/fr', (req, res) => {
 
 // Post Email Request
 app.post('/send', (req, res) => {
-
-    // Email Template
-    var output = `
-        <p>Une réservation a été faite sur le formulaire de contact !</p>
-        <h3>Détails</h3>`;
-        
+    
+    try {
+        // Email Template
+        var output = `
+            <p>Une réservation a été faite sur le formulaire de contact !</p>
+            <h3>Détails</h3>`;
+            
         output += '<p><b>Numéro de la réservation:</b> ' + req.body.hash + '</p>';
         
-        fields.forEach( (item, index) => {
-            output += '<p><b>' + item.label + `</b>: ${req.body[item.name]}</p>`;
+        output += '<p><b>Nombre de personnes:</b> ' + req.body.numberofpersons + '</p>';
+        
+        var reservation = {
+            hash: req.body.hash,
+        }
+        
+        let addedpersons = req.body.addedpersons;
+        if ( req.body.numberofpersons > 1 ) {
+            output += "<ul><li>";
+            reservation.persons = [];
+            let newperson = {};
+            fields.forEach( (item, index) => {
+                if ( item.multiple && req.body[item.name] ) {
+                    output += '<p><b>' + item.label + `</b>: ${req.body[item.name]}</p>`;
+                    newperson[item.name] = req.body[item.name];
+                }
+            });
+            output += "</li>";
+            reservation.persons.push(newperson);
+            for ( i = 1 ; i <= addedpersons + 1; i++ ) {
+                output += "<li>";
+                let person = {};
+                fields.forEach( (item, index) => {
+                    let value = item.name + i;
+                    if ( item.multiple && req.body[value] ) {
+                        output += '<p><b>' + item.label + `</b>: ${req.body[value]}</p>`;
+                        person[item.name] = req.body[value];
+                    }
+                
+                });
+                if ( Object.keys(person).length !== 0 ) {
+                    reservation.persons.push(person);
+                    output += "</li>";
+                } else {
+                   output = output.slice(0, -4); 
+                }
+            }
+            output += "</ul>";
+            fields.forEach( (item, index) => {
+                if ( !item.multiple ) {
+                    output += '<p><b>' + item.label + `</b>: ${req.body[item.name]}</p>`;
+                    reservation[item.name] = req.body[item.name];
+                }
+            });
+            
+        } else {
+            fields.forEach( (item, index) => {
+                output += '<p><b>' + item.label + `</b>: ${req.body[item.name]}</p>`;
+                reservation[item.name] = req.body[item.name];
+            });
+        }
+        
+        
+        
+        // Create reusable transporter object using the default SMTP transport
+        let transporter = nodemailer.createTransport({
+                host:  config.host,
+                port: config.port,
+                secure: true,
+                auth: {
+                        user: config.user,
+                        pass: config.pass
+                },
+                requireTLS: true
         });
 
 
-    // Create reusable transporter object using the default SMTP transport
-    let transporter = nodemailer.createTransport({
-            host:  config.host,
-            port: config.port,
-            secure: true,
-            auth: {
-                    user: config.user,
-                    pass: config.pass
-            },
-            requireTLS: true
-    });
 
-
-
-    // Setup email settings
-    let mailOptions = {
-            from: config.from,
-            to: config.to,
-            cc: config.cc,
-            bcc: config.bcc,
-            subject: config.subject,
-            html: output
-    };
-    
-    if ( req.body.email ) mailOptions.replyTo = req.body.email;
-    
-     // IS ICS ACTIVATED
-    if ( config.sendIcs == "true" ) {
-       
-        var arrivalEvent = {};
-        var departureEvent = {};
-        const toNumbers = arr => arr.map(Number);
-        // CREATE AN ICS FILE IF ARRIVALDATE
-        if ( req.body.arrivaldate ) {
-            let arrivalDate = req.body.arrivaldate.split("-");
-            arrivalDate = toNumbers(arrivalDate);
-            arrivalEvent = {
-                start: [ arrivalDate[0], arrivalDate[1], arrivalDate[2] ],
-                 end: [ arrivalDate[0], arrivalDate[1], arrivalDate[2] + 1 ],
-                 title: "Arrivée " + req.body.name,
-                 description: "Contacter " + req.body.email,
-                 categories: ["Arrivées Viale"],
-                 status: "CONFIRMED",
-                 
+        // Setup email settings
+        let mailOptions = {
+                from: config.from,
+                to: config.to,
+                cc: config.cc,
+                bcc: config.bcc,
+                subject: config.subject,
+                html: output
+        };
+        
+        if ( req.body.email ) mailOptions.replyTo = req.body.email;
+        
+         // IS ICS ACTIVATED
+        if ( config.sendIcs == "true" ) {
+           let personsComing = "";
+            if ( reservation.persons ) {
+                reservation.persons.forEach((person, index) => {
+                    personsComing += person.surname + " " + person.name ; 
+                    if ( index < reservation.persons.length -1 ) personsComing += ", ";
+                });
+            } else {
+                personsComing = reservation.surname + " " + reservation.name;
+            }
+            var arrivalEvent = {};
+            var departureEvent = {};
+            const toNumbers = arr => arr.map(Number);
+            // CREATE AN ICS FILE IF ARRIVALDATE
+            if ( req.body.arrivaldate ) {
+                let arrivalDate = new Date(req.body.arrivaldate);
+                let endarrivalDate = new Date();
+                endarrivalDate.setDate(arrivalDate.getDate() + 1);
+                //let arrivalDate = req.body.arrivaldate.split("-");
+                //arrivalDate = toNumbers(arrivalDate);
+                
+                arrivalEvent = {
+                    start: [ arrivalDate.getFullYear(), arrivalDate.getMonth() + 1, arrivalDate.getDate() ],
+                     end: [ arrivalDate.getFullYear(), arrivalDate.getMonth() + 1, endarrivalDate.getDate() ],
+                     title: "Arrivée " + personsComing,
+                     description: "Contacter " + req.body.email,
+                     categories: ["Arrivées Viale"],
+                     status: "CONFIRMED",
+                     
+                }
+            }
+            
+            if ( req.body.departuredate ) {
+                let departureDate = new Date(req.body.departuredate);
+                let enddepartureDate = new Date();
+                enddepartureDate.setDate(departureDate.getDate() + 1);
+                //toNumbers(departureDate);
+                departureEvent = {
+                    start: [ departureDate.getFullYear(), departureDate.getMonth() + 1, departureDate.getDate() ],
+                     end: [ departureDate.getFullYear(), departureDate.getMonth() + 1, enddepartureDate.getDate() ],
+                     title: "Départ " + personsComing,
+                     description: "Contacter " + req.body.email,
+                     categories: ["Départs Viale"],
+                     status: "CONFIRMED",
+                     
+                }
             }
         }
         
-        if ( req.body.departuredate ) {
-            let departureDate = req.body.departuredate.split("-");
-            departureDate = toNumbers(departureDate);
-            departureEvent = {
-                start: [ departureDate[0], departureDate[1], departureDate[2] ],
-                 end: [ departureDate[0], departureDate[1], departureDate[2] + 1 ],
-                 title: "Départ " + req.body.name,
-                 description: "Contacter " + req.body.email,
-                 categories: ["Départs Viale"],
-                 status: "CONFIRMED",
-                 
-            }
-        }
-    }
-    
-    let sendFail = (err) => {
-        console.error(err);
-        renderVariables.msg = failAlert;
-        res.render('home', renderVariables);
-    };
-    
-    let sendSuccess = () => {
-        renderVariables.msg = successAlert;
-        res.render('home', renderVariables);
-    };
-    
-    db.getLink(req.body.hash, (err, row) => {
-        if (err) {
-            sendFail(err);
-        } else if (row) {
-            db.insertBooking(req.body, () => {
-                if (err) {
-                    sendFail(err);
-                } else {
-                    db.deleteLink(req.body.hash, (err) => {
-                        if (err) console.error(err);
-                        if ( config.sendIcs ) {
-                            ics.createEvents([arrivalEvent, departureEvent], (error, attachment) => {
-                                if (error) console.log(error);
-                                else {
-                                    mailOptions.attachments = [
-                                        {
-                                            filename: 'reservation.ics',
-                                            content: attachment
-                                        }
-                                    ];
-                                    transporter.sendMail(mailOptions, (error, info) => {
-                                        if (error) {
-                                            sendFail(error);
-                                        } else {
-                                            sendSuccess();
-                                        }
-                                    });
-                                    
-                                }
-                            });
-                                                             
-                        } else {
-                            transporter.sendMail(mailOptions, (error, info) => {
-                                if (error) {
-                                    sendFail(error);
-                                } else {
-                                    sendSuccess();
-                                }
-                            });
-                        }
-                        
-                                                                            
-                    });
-                }
-            });
-        } else {
-            renderVariables.msg = unAuthorizedAlert;
+        let sendFail = (err) => {
+            console.error(err);
+            renderVariables.msg = failAlert(res.__("Échec lors de l'envoi du message, veuillez réessayer plus tard") + ".");
             res.render('home', renderVariables);
-        }
-    });
+        };
+        
+        let sendSuccess = () => {
+            renderVariables.msg = successAlert(res.__("Votre formulaire a bien été pris en compte") + " !");
+            res.render('home', renderVariables);
+        };
+        
+        db.getLink(reservation.hash, (err, row) => {
+            if (err) {
+                sendFail(err);
+            } else if (row) {
+                db.insertBooking(reservation, (err) => {
+                    if (err) {
+                        sendFail(err);
+                    } else {
+                        db.deleteLink(reservation.hash, (err) => {
+                            if (err) console.error(err);
+                            if ( config.sendIcs ) {
+                                ics.createEvents([arrivalEvent, departureEvent], (error, attachment) => {
+                                    if (error) console.error(error);
+                                    else {
+                                        mailOptions.attachments = [
+                                            {
+                                                filename: 'reservation.ics',
+                                                content: attachment
+                                            }
+                                        ];
+                                        transporter.sendMail(mailOptions, (error, info) => {
+                                            if (error) {
+                                                sendFail(error);
+                                            } else {
+                                                sendSuccess();
+                                            }
+                                        });
+                                        
+                                    }
+                                });
+                                                                 
+                            } else {
+                                transporter.sendMail(mailOptions, (error, info) => {
+                                    if (error) {
+                                        sendFail(error);
+                                    } else {
+                                        sendSuccess();
+                                    }
+                                });
+                            }
+                            
+                                                                                
+                        });
+                    }
+                });
+            } else {
+                renderVariables.msg = unAuthorizedAlert;
+                res.render('home', renderVariables);
+            }
+        });
+    } catch (err) {
+        console.error(err);
+    }
 });

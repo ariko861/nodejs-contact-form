@@ -1,10 +1,28 @@
 [
     {
-        "label": "Nom complet",
+        "label": "Nom de famille",
         "name": "name",
-        "placeholder": "Saisissez votre nom complet",
+        "placeholder": "Saisissez votre nom de famille",
         "type": "text",
-        "required": true
+        "required": true,
+        "multiple": true
+    },
+    {
+        "label": "Prénom",
+        "name": "surname",
+        "placeholder": "Saisissez votre prénom",
+        "type": "text",
+        "required": true,
+        "multiple": true
+    },
+    
+    {
+        "label": "Âge",
+        "name": "age",
+        "placeholder": "Votre âge",
+        "type": "number",
+        "required": true,
+        "multiple": true
     },
     {
         "label": "Email",
@@ -13,6 +31,22 @@
         "type": "text",
         "required": true
     },
+    {
+        "label": "Numéro de téléphone",
+        "name": "phone",
+        "placeholder": "Saisissez votre numéro de téléphone ( facultatif )",
+        "type": "tel",
+        "required": false
+    },
+    {
+        "label": "Adresse",
+        "name": "address",
+        "placeholder": "Saisissez votre adresse postale ( facultatif )",
+        "type": "textarea",
+        "textarea": true,
+        "required": false
+    },
+    
     {
         "label": "Date d'arrivée",
         "name": "arrivaldate",
@@ -28,12 +62,13 @@
         "notBeforeToday": true
     },
     {
-        "label": "Quel montant souhaiteriez vous verser par nuitée ? ( selon vos moyens )",
+        "label": "Participation aux frais, selon vos moyens",
         "name": "price",
         "type": "radio",
         "options": ["11€", "15€"],
         "radio": true,
-        "required": true
+        "required": true,
+        "multiple": true
     },
     {
         "label": "Message",
