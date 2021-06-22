@@ -65,7 +65,17 @@
         "label": "Participation aux frais, selon vos moyens",
         "name": "price",
         "type": "radio",
-        "options": ["11€", "15€"],
+        "options": [ 
+            {
+                "value": "12€",
+                "label": "12€ pour les étudiants et les personnes sans emploi"
+                
+            },
+            {
+                 "value": "16€",
+                 "label": "16€ pour les travailleurs"
+            }    
+        ],
         "radio": true,
         "required": true,
         "multiple": true

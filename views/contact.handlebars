@@ -56,14 +56,14 @@
                                     {{else if this.select}}
                                         <select name="{{this.name}}" class="form-control form-control-sm" {{#if this.required}} required {{/if}}>
                                         {{# each this.options }}
-                                            <option value="{{this}}">{{this}}</option>
+                                            <option value="{{this.value}}">{{this.label}}</option>
                                         {{/each}}
                                         </select>
                                     {{else if this.radio}}
                                         {{# each this.options }}
                                         <div class="form-check">
-                                            <input type="radio" name="{{../this.name}}" id="{{../this.name}}-{{this}}" value="{{this}}" class="form-check-input" {{#if ../this.required}} required {{/if}}>
-                                            <label class="form-check-label" for="{{../this.name}}-{{this}}">{{this}}</label><br>
+                                            <input type="radio" name="{{../this.name}}" id="{{../this.name}}-{{this.value}}" value="{{this.value}}" class="form-check-input" {{#if ../this.required}} required {{/if}}>
+                                            <label class="form-check-label" for="{{../this.name}}-{{this.value}}">{{this.label}}</label><br>
                                         </div>
                                         {{/each}}
                                     {{else}}
@@ -110,7 +110,7 @@
 
                             <!-- Submit Button -->
                             <div class="text-right">
-                                <input class="btn btn-submit" type="submit" value={{{__ "Submit"}}}>
+                                <input class="btn btn-submit" type="submit" value={{{__ "Valider"}}}>
                             </div>
 
                     </form>
