@@ -12,6 +12,8 @@ module.exports = {
     openIDsecret: process.env.OPENID_SECRET,
     openIDclientSecret: process.env.OPENID_CLIENTSECRET,
     
+    jsonToken: process.env.JSON_TOKEN,
+    
     siteName: process.env.SITE_NAME,
     siteAdress: process.env.SITE_ADRESS,
     siteEmail: process.env.SITE_EMAIL,
