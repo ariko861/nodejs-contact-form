@@ -185,27 +185,29 @@ app.get('/admin/newlink', adminRequestOptions, (req, res) => {
     
 });
 
-app.post('/admin/newlink', (req, res) => {
-      var token = req.body['token'];
-      if (!token) return res.status(401).json({ auth: false, message: 'No token provided.' });
-      
-      if ( token === config.jsonToken ) {
-        db.createNewLink((err, hash) => {
-            if (err) {
-                console.error(err)
-            } else {
-                var link = config.webAdress + "?id=" + hash;
-                return res.json({link: link});
-            }
-        });
-      } else {
-        
-          return res.status(500).json({ auth: false, message: 'Failed to authenticate token.' });
-        
-      }
-         
-      
-});
+if ( config.jsonToken ) {
+    app.post('/admin/newlink', (req, res) => {
+          var token = req.body['token'];
+          if (!token) return res.status(401).json({ auth: false, message: 'No token provided.' });
+          
+          if ( token === config.jsonToken ) {
+            db.createNewLink((err, hash) => {
+                if (err) {
+                    console.error(err)
+                } else {
+                    var link = config.webAdress + "?id=" + hash;
+                    return res.json({link: link});
+                }
+            });
+          } else {
+            
+              return res.status(500).json({ auth: false, message: 'Failed to authenticate token.' });
+            
+          }
+             
+          
+    });
+}
 
 
 app.post('/admin/cancelreservation', adminRequestOptions, (req,res) => {
