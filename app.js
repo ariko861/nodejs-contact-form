@@ -146,7 +146,7 @@ app.get ('/', (req, res) => {
                 res.render('home', {msg: failAlert});
             } else if (row) {
                 renderVariables.hash = row.linkid;
-                renderVariables.fields.forEach((item, index) => {
+                fields.forEach((item, index) => {
                     renderVariables.fields[index].label = res.__(item.label);
                     renderVariables.fields[index].placeholder = res.__(item.placeholder);
                 });
@@ -265,6 +265,7 @@ app.post('/send', (req, res) => {
     
     try {
         // Email Template
+        
         var output = `
             <p>Une réservation a été faite sur le formulaire de contact !</p>
             <h3>Détails</h3>`;
@@ -272,6 +273,17 @@ app.post('/send', (req, res) => {
         output += '<p><b>Numéro de la réservation:</b> ' + req.body.hash + '</p>';
         
         output += '<p><b>Nombre de personnes:</b> ' + req.body.numberofpersons + '</p>';
+        
+        fields.forEach( (item, index) => { // To correct date format if client browser date format different from yyyy-mm-dd
+            if ( item.type === 'date' ) {
+                if ( !req.body[item.name].match(/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/) ) {
+                    let fieldDate = new Date(req.body[item.name]);
+                    let correctedDate = fieldDate.getFullYear() + '-' + ( fieldDate.getMonth() + 1 ) + '-' + fieldDate.getDate();
+                    req.body[item.name] = correctedDate;
+                }
+            }
+        });
+        
         
         var reservation = {
             hash: req.body.hash,

@@ -50,5 +50,21 @@
 	"par virement sur le compte %s, en mentionnant votre nom et votre numéro de réservation %s": "par virement sur le compte %s, en mentionnant votre nom et votre numéro de réservation %s",
 	"Le lien a été copié !": "Le lien a été copié !",
 	"Valider": "Valider",
-	"Contactez nous par email pour tout demande d'inscription": "Contactez nous par email pour tout demande d'inscription"
+	"Contactez nous par email pour tout demande d'inscription": "Contactez nous par email pour tout demande d'inscription",
+	"Ajouter une personne": "Ajouter une personne",
+	"Last name": "Nom de famille",
+	"Write here your last name": "Saisissez votre nom de famille",
+	"First name": "Prénom",
+	"Write here your first name": "Saisissez votre prénom",
+	"Age": "Âge",
+	"Your age": "Votre âge",
+	"Write here your email address": "Saisissez votre adresse email",
+	"Phone number": "Numéro de téléphone",
+	"Write your phone number ( optional )": "Saisissez votre numéro de téléphone ( facultatif )",
+	"Address": "Adresse",
+	"Write your postal address ( optional )": "Saisissez votre adresse postale ( facultatif )",
+	"Arrival date": "Date d'arrivée",
+	"Departure date": "Date de départ",
+	"Participation to costs, according to your means of subsistence": "Participation aux frais, selon vos moyens",
+	"Leave us a message if you wish": "Saisissez un message si vous le souhaitez"
 }
