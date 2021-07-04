@@ -363,8 +363,27 @@ app.post('/send', (req, res) => {
                 html: output
         };
         
-        if ( req.body.email ) mailOptions.replyTo = req.body.email;
+    
         
+        
+        if ( req.body.email ) {
+            mailOptions.replyTo = req.body.email;
+            var clientOutput = "<p>Récapitulatif de votre réservation à " + config.siteName + "</p>" + output;
+            
+            clientOutput += "<p>" + res.__("Vous pouvez régler :") + "</p><ul>";
+            if ( config.cartebancaire ) clientOutput += "<li>" + res.__("sur place par carte bancaire") + "</li>";
+            if ( config.cash ) clientOutput += "<li>" + res.__("sur place en espèces") + "</li>";
+            if ( config.iban ) clientOutput += "<li>" + res.__("par virement sur le compte %s, en mentionnant votre nom et votre numéro de réservation %s", config.iban, reservation.hash) + "</li>";
+            clientOutput += "</ul>";
+            
+            
+            var clientMailOptions = {
+                from: config.from,
+                 to: req.body.email,
+                 subject: config.subject,
+                 html: clientOutput
+            }
+        }
          // IS ICS ACTIVATED
         if ( config.sendIcs == "true" ) {
            let personsComing = "";
@@ -457,6 +476,13 @@ app.post('/send', (req, res) => {
                                             if (error) {
                                                 sendFail(error);
                                             } else {
+                                                if ( clientOutput ) {
+                                                    transporter.sendMail(clientMailOptions, (error, info) => {
+                                                        if (error) {
+                                                            console.error(error);
+                                                        }
+                                                    });
+                                                }
                                                 sendSuccess();
                                             }
                                         });
@@ -469,6 +495,14 @@ app.post('/send', (req, res) => {
                                     if (error) {
                                         sendFail(error);
                                     } else {
+                                        
+                                        if ( clientOutput ) {
+                                            transporter.sendMail(clientMailOptions, (error, info) => {
+                                                if (error) {
+                                                    console.error(error);
+                                                }
+                                            });
+                                        }
                                         sendSuccess();
                                     }
                                 });
