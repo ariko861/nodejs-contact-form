@@ -20,6 +20,11 @@ module.exports = {
     sitePhone: process.env.SITE_PHONE,
     matrixRoom: process.env.MATRIX_ROOM,
     
+    nextcloudURL: process.env.NEXTCLOUD_URL,
+    nextcloudUser: process.env.NEXTCLOUD_USER,
+    nextcloudPass: process.env.NEXTCLOUD_PASS,
+    nextcloudCal: process.env.NEXTCLOUD_CAL,
+    
     cartebancaire: process.env.CARTEBANCAIRE,
     cash: process.env.CASH,
     iban: process.env.IBAN,

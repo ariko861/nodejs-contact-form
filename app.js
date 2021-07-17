@@ -11,6 +11,7 @@ const db = require('./db');
 const converter = require('json-2-csv');
 const ics = require('ics-plus');
 const { auth, requiresAuth, claimCheck } = require('express-openid-connect');
+const NextcloudConnection = require('./nextcloud.js');
 
 
 const i18n = new I18n({
@@ -22,7 +23,10 @@ const i18n = new I18n({
   defaultLocale: 'fr',
 })
 
+const alternumerica = new NextcloudConnection(config.nextcloudURL, config.nextcloudUser, config.nextcloudPass );
 
+const boardID = 14;
+const stackIDs = [52, 57];
 
 // Alert if successfully sending email
 const successAlert = (string) => {
@@ -449,6 +453,17 @@ app.post('/send', (req, res) => {
             if ( config.iban ) renderVariables.msg += "<li>" + res.__("par virement sur le compte %s, en mentionnant votre nom et votre numéro de réservation %s", config.iban, reservation.hash) + "</li>";
             renderVariables.msg += "</ul>";
             
+            if ( reservation.persons ) {
+                reservation.persons.forEach( (person, index) => {
+                    stackIDs.forEach( (stack, index) => {
+                        alternumerica.addDeckCard(boardID, stack, person.surname + " " + person.name, reservation.arrivaldate);
+                    });
+                });
+            } else {
+                stackIDs.forEach( (stack, index) => {
+                    alternumerica.addDeckCard(boardID, stack, reservation.surname + " " + reservation.name, reservation.arrivaldate);
+                });
+            }
             res.render('home', renderVariables);
         };
         
