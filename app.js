@@ -368,7 +368,15 @@ app.post('/send', (req, res) => {
         };
         
     
-        
+        let personsComing = "";
+        if ( reservation.persons ) {
+            reservation.persons.forEach((person, index) => {
+                personsComing += person.surname + " " + person.name ;
+                if ( index < reservation.persons.length -1 ) personsComing += ", ";
+            });
+        } else {
+            personsComing = reservation.surname + " " + reservation.name;
+        }
         
         if ( req.body.email ) {
             mailOptions.replyTo = req.body.email;
@@ -384,21 +392,13 @@ app.post('/send', (req, res) => {
             var clientMailOptions = {
                 from: config.from,
                  to: req.body.email,
-                 subject: config.subject,
+                 subject: config.subject + personsComing,
                  html: clientOutput
             }
         }
          // IS ICS ACTIVATED
         if ( config.sendIcs == "true" ) {
-           let personsComing = "";
-            if ( reservation.persons ) {
-                reservation.persons.forEach((person, index) => {
-                    personsComing += person.surname + " " + person.name ; 
-                    if ( index < reservation.persons.length -1 ) personsComing += ", ";
-                });
-            } else {
-                personsComing = reservation.surname + " " + reservation.name;
-            }
+
             var arrivalEvent = {};
             var departureEvent = {};
             const toNumbers = arr => arr.map(Number);
