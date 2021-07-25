@@ -356,18 +356,6 @@ app.post('/send', (req, res) => {
         });
 
 
-
-        // Setup email settings
-        let mailOptions = {
-                from: config.from,
-                to: config.to,
-                cc: config.cc,
-                bcc: config.bcc,
-                subject: config.subject,
-                html: output
-        };
-        
-    
         let personsComing = "";
         if ( reservation.persons ) {
             reservation.persons.forEach((person, index) => {
@@ -378,6 +366,18 @@ app.post('/send', (req, res) => {
             personsComing = reservation.surname + " " + reservation.name;
         }
         
+        // Setup email settings
+        let mailOptions = {
+                from: config.from,
+                to: config.to,
+                cc: config.cc,
+                bcc: config.bcc,
+                subject: config.subject + ' ' + personsComing,
+                html: output
+        };
+
+
+
         if ( req.body.email ) {
             mailOptions.replyTo = req.body.email;
             var clientOutput = "<p>Récapitulatif de votre réservation à " + config.siteName + "</p>" + output;
@@ -392,7 +392,7 @@ app.post('/send', (req, res) => {
             var clientMailOptions = {
                 from: config.from,
                  to: req.body.email,
-                 subject: config.subject + ' ' + personsComing,
+                 subject: config.subject,
                  html: clientOutput
             }
         }
