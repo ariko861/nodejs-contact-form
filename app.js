@@ -392,7 +392,7 @@ app.post('/send', (req, res) => {
             var clientMailOptions = {
                 from: config.from,
                  to: req.body.email,
-                 subject: config.subject + personsComing,
+                 subject: config.subject + ' ' + personsComing,
                  html: clientOutput
             }
         }
