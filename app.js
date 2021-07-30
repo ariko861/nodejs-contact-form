@@ -25,8 +25,16 @@ const i18n = new I18n({
 
 const alternumerica = new NextcloudConnection(config.nextcloudURL, config.nextcloudUser, config.nextcloudPass );
 
-const boardID = 14;
-const stackIDs = [52, 57];
+const deckIDs = [
+{
+    board: 14,
+    stack:52
+},
+{
+    board: 16,
+    stack: 64
+}
+];
 
 // Alert if successfully sending email
 const successAlert = (string) => {
@@ -453,15 +461,16 @@ app.post('/send', (req, res) => {
             if ( config.iban ) renderVariables.msg += "<li>" + res.__("par virement sur le compte %s, en mentionnant votre nom et votre numéro de réservation %s", config.iban, reservation.hash) + "</li>";
             renderVariables.msg += "</ul>";
             
+            let departPrevu = "Départ prévu le " + reservation.departuredate;
             if ( reservation.persons ) {
                 reservation.persons.forEach( (person, index) => {
-                    stackIDs.forEach( (stack, index) => {
-                        alternumerica.addDeckCard(boardID, stack, person.surname + " " + person.name, reservation.arrivaldate);
+                    deckIDs.forEach( (deck, index) => {
+                        alternumerica.addDeckCard(deck.board, deck.stack, person.surname + " " + person.name, reservation.arrivaldate, departPrevu);
                     });
                 });
             } else {
-                stackIDs.forEach( (stack, index) => {
-                    alternumerica.addDeckCard(boardID, stack, reservation.surname + " " + reservation.name, reservation.arrivaldate);
+                deckIDs.forEach( (deck, index) => {
+                    alternumerica.addDeckCard(deck.board, deck.stack, reservation.surname + " " + reservation.name, reservation.arrivaldate, departPrevu);
                 });
             }
             res.render('home', renderVariables);

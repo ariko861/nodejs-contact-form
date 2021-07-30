@@ -1,6 +1,15 @@
 const got = require('got');
 const stream = require('stream');
 
+const getOrderFromDate = ( date ) => {
+    let now = new Date(date);
+    var start = new Date(now.getFullYear(), 0, 0);
+    var diff = (now - start) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
+    var oneDay = 1000 * 60 * 60 * 24;
+    var day = Math.floor(diff / oneDay);
+    return day;
+};
+
 class NextcloudConnection {
     constructor(server, username, password){
       this.server = server;
@@ -17,7 +26,7 @@ class NextcloudConnection {
           json: {
             title: title,
             type: 'plain',
-            order: 0,
+            order: getOrderFromDate(date),
             description: description || "",
             duedate: date
           }
