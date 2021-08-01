@@ -409,39 +409,23 @@ app.post('/send', (req, res) => {
          // IS ICS ACTIVATED
         if ( config.sendIcs == "true" ) {
 
-            var arrivalEvent = {};
-            var departureEvent = {};
+            var stayEvent = {};
             const toNumbers = arr => arr.map(Number);
             // CREATE AN ICS FILE IF ARRIVALDATE
-            if ( req.body.arrivaldate ) {
+            if ( req.body.arrivaldate && req.body.departuredate ) {
                 let arrivalDate = new Date(req.body.arrivaldate);
-                let endarrivalDate = new Date();
-                endarrivalDate.setDate(arrivalDate.getDate() + 1);
+                let departureDate = new Date(req.body.departuredate);
+                let endDate = new Date();
+                endDate.setDate(departureDate.getDate() + 1);
                 //let arrivalDate = req.body.arrivaldate.split("-");
                 //arrivalDate = toNumbers(arrivalDate);
                 
-                arrivalEvent = {
-                    start: [ arrivalDate.getFullYear(), arrivalDate.getMonth() + 1, arrivalDate.getDate() ],
-                     end: [ arrivalDate.getFullYear(), arrivalDate.getMonth() + 1, endarrivalDate.getDate() ],
-                     title: "Arrivée " + personsComing,
+                stayEvent = {
+                    start: [ arrivalDate.getFullYear(), arrivalDate.getMonth() + 1, arrivalDate.getDate(), 12, 0 ],
+                     end: [ departureDate.getFullYear(), departureDate.getMonth() + 1, departureDate.getDate(), 12, 0 ],
+                     title: "Séjour " + personsComing,
                      description: "Contacter " + req.body.email,
-                     categories: ["Arrivées Viale"],
-                     status: "CONFIRMED",
-                     
-                }
-            }
-            
-            if ( req.body.departuredate ) {
-                let departureDate = new Date(req.body.departuredate);
-                let enddepartureDate = new Date();
-                enddepartureDate.setDate(departureDate.getDate() + 1);
-                //toNumbers(departureDate);
-                departureEvent = {
-                    start: [ departureDate.getFullYear(), departureDate.getMonth() + 1, departureDate.getDate() ],
-                     end: [ departureDate.getFullYear(), departureDate.getMonth() + 1, enddepartureDate.getDate() ],
-                     title: "Départ " + personsComing,
-                     description: "Contacter " + req.body.email,
-                     categories: ["Départs Viale"],
+                     categories: ["Séjour Viale"],
                      status: "CONFIRMED",
                      
                 }
@@ -490,7 +474,7 @@ app.post('/send', (req, res) => {
                         db.deleteLink(reservation.hash, (err) => {
                             if (err) console.error(err);
                             if ( config.sendIcs ) {
-                                ics.createEvents([arrivalEvent, departureEvent], (error, attachment) => {
+                                ics.createEvent(stayEvent, (error, attachment) => {
                                     if (error) console.error(error);
                                     else {
                                         mailOptions.attachments = [
