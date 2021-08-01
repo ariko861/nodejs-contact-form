@@ -19,6 +19,7 @@ module.exports = {
     siteEmail: process.env.SITE_EMAIL,
     sitePhone: process.env.SITE_PHONE,
     matrixRoom: process.env.MATRIX_ROOM,
+    lienUtile: process.env.LIENUTILE,
     
     nextcloudURL: process.env.NEXTCLOUD_URL,
     nextcloudUser: process.env.NEXTCLOUD_USER,

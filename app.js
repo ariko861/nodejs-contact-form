@@ -122,6 +122,7 @@ var renderVariables = {
     siteAdress: config.siteAdress,
     siteEmail: config.siteEmail,
     matrixRoom: config.matrixRoom,
+    lienUtile: config.lienUtile,
     sitePhone:config.sitePhone,
     coordinates: {
         lat: config.mapLatitude,
@@ -395,6 +396,7 @@ app.post('/send', (req, res) => {
             if ( config.cash ) clientOutput += "<li>" + res.__("sur place en espèces") + "</li>";
             if ( config.iban ) clientOutput += "<li>" + res.__("par virement sur le compte %s, en mentionnant votre nom et votre numéro de réservation %s", config.iban, reservation.hash) + "</li>";
             clientOutput += "</ul>";
+            clientOutput += "<p>"+ config.lienUtile +"</p>";
             
             
             var clientMailOptions = {
@@ -460,6 +462,7 @@ app.post('/send', (req, res) => {
             if ( config.cash ) renderVariables.msg += "<li>" + res.__("sur place en espèces") + "</li>";
             if ( config.iban ) renderVariables.msg += "<li>" + res.__("par virement sur le compte %s, en mentionnant votre nom et votre numéro de réservation %s", config.iban, reservation.hash) + "</li>";
             renderVariables.msg += "</ul>";
+            renderVariables.msg += "<p>" + config.lienUtile + "</p>";
             
             let departPrevu = "Départ prévu le " + reservation.departuredate;
             if ( reservation.persons ) {
