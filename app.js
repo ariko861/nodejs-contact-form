@@ -440,13 +440,13 @@ app.post('/send', (req, res) => {
         
         let sendSuccess = () => {
             renderVariables.msg = successAlert(res.__("Votre formulaire a bien été pris en compte") + " !");
-            renderVariables.msg += "<p>" + res.__("Le coût total de votre réservation est de %s €", reservation.totalCost ) + "</p>";
+            /*renderVariables.msg += "<p>" + res.__("Le coût total de votre réservation est de %s €", reservation.totalCost ) + "</p>";
             renderVariables.msg += "<p>" + res.__("Vous pouvez régler :") + "</p><ul>";
             if ( config.cartebancaire ) renderVariables.msg += "<li>" + res.__("sur place par carte bancaire") + "</li>";
             if ( config.cash ) renderVariables.msg += "<li>" + res.__("sur place en espèces") + "</li>";
             if ( config.iban ) renderVariables.msg += "<li>" + res.__("par virement sur le compte %s, en mentionnant votre nom et votre numéro de réservation %s", config.iban, reservation.hash) + "</li>";
             renderVariables.msg += "</ul>";
-            renderVariables.msg += "<p>" + config.lienUtile + "</p>";
+            */renderVariables.msg += "<p>" + config.lienUtile + "</p>";
             
             let departPrevu = "Départ prévu le " + reservation.departuredate;
             if ( reservation.persons ) {
