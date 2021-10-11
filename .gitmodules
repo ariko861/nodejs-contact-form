@@ -1,0 +1,3 @@
+[submodule "public/MatrixSimpleCMS"]
+	path = public/MatrixSimpleCMS
+	url = https://github.com/Alternumerica/MatrixSimpleCMS.git

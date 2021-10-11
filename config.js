@@ -48,5 +48,9 @@ module.exports = {
     cc: process.env.MAIL_CC, // Your email address
     bcc: process.env.MAIL_BCC, // Your email address
     subject: process.env.MAIL_SUBJECT, // Subject
+
+    matrixCMSHomeserver: process.env.MATRIX_CMS_HOMESERVER,
+    matrixCMSRoomAlias: process.env.MATRIX_CMS_ROOM_ALIAS,
+    matrixCMSFilteredUser: process.env.MATRIX_CMS_FILTERED_USER,
     
 };

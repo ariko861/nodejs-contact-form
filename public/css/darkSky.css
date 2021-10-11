@@ -30,6 +30,9 @@ a i:hover {
     -ms-transition: color .2s;
     transition: color .2s;
 }
+blockquote {
+   color: #d7d7d7 !important;
+}
 
 /* ==================================
     Container

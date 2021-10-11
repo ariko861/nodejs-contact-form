@@ -124,6 +124,9 @@ var renderVariables = {
     matrixRoom: config.matrixRoom,
     lienUtile: config.lienUtile,
     sitePhone:config.sitePhone,
+    matrixCMSHomeserver: config.matrixCMSHomeserver,
+    matrixCMSRoomAlias: config.matrixCMSRoomAlias,
+    matrixCMSFilteredUser: config.matrixCMSFilteredUser,
     coordinates: {
         lat: config.mapLatitude,
         long: config.mapLongitude
@@ -176,6 +179,9 @@ app.get ('/', (req, res) => {
     }
 });
 
+app.get('/lectures', (req, res) => {
+    res.render("lectures", renderVariables);
+});
 
 app.get('/admin', adminRequestOptions, (req, res) => {
     
