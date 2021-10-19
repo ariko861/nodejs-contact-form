@@ -51,6 +51,7 @@ module.exports = {
 
     matrixCMSHomeserver: process.env.MATRIX_CMS_HOMESERVER,
     matrixCMSRoomAlias: process.env.MATRIX_CMS_ROOM_ALIAS,
+    matrixCMSRoom2: process.env.MATRIX_CMS_ROOM2,
     matrixCMSFilteredUser: process.env.MATRIX_CMS_FILTERED_USER,
     
 };
