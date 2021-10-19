@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <!-- Meta Tag -->
+        <meta charset="utf-8">
+        <meta name="description" content="Contact Form">
+        <meta name="keywords" content="Nodejs,UIkit,Nodemailer,Expressjs">
+        <meta name="author" content="Author">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Title -->
+        <title>{{{siteName}}}</title>
+
+        <!-- Font -->
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="/public/css/darkSky.css">
+        <link rel="stylesheet" href="/public/css/fontawesome.min.css">
+        <link rel="stylesheet" href="/public/MatrixSimpleCMS/matrix-cms.css">
+         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+        
+    </head>
+    <body>
+
+        <!-- Container -->
+        <div class="container">
+            <div class="row justify-content-center left-column">
+
+            <div id="matrix-body" data-homeserver="{{{matrixCMSHomeserver}}}" data-giveRoomAddress="false" data-displayDate="false" data-roomID="{{{matrixCMSRoom2}}}" data-userFilteredOut="{{{matrixCMSFilteredUser}}}"></div>
+
+
+            </div>
+        </div>
+        
+        <!-- JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="/public/MatrixSimpleCMS/lib/browser-matrix.min.js"></script>
+        <script src="/public/MatrixSimpleCMS/matrix-cms.js"></script>
+
+
+    </body>
+</html>
