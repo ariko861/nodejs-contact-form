@@ -361,7 +361,7 @@ app.post('/send', (req, res) => {
         
         reservation.totalCost = calculReservationCost(reservation);
         
-        output += '<p><b>Coût du séjour</b>: ' + reservation.totalCost +'€</p>';
+        //output += '<p><b>Coût du séjour</b>: ' + reservation.totalCost +'€</p>';
         
         // Create reusable transporter object using the default SMTP transport
         let transporter = nodemailer.createTransport({
@@ -400,13 +400,13 @@ app.post('/send', (req, res) => {
 
         if ( req.body.email ) {
             mailOptions.replyTo = req.body.email;
-            var clientOutput = "<p>Récapitulatif de votre réservation à " + config.siteName + "</p>" + output;
+            var clientOutput = "<p>Nous avons bien reçu votre réservation pour " + config.siteName + "</p>" + output;
             
-            clientOutput += "<p>" + res.__("Vous pouvez régler :") + "</p><ul>";
-            if ( config.cartebancaire ) clientOutput += "<li>" + res.__("sur place par carte bancaire") + "</li>";
-            if ( config.cash ) clientOutput += "<li>" + res.__("sur place en espèces") + "</li>";
-            if ( config.iban ) clientOutput += "<li>" + res.__("par virement sur le compte %s, en mentionnant votre nom et votre numéro de réservation %s", config.iban, reservation.hash) + "</li>";
-            clientOutput += "</ul>";
+            //clientOutput += "<p>" + res.__("Vous pouvez régler :") + "</p><ul>";
+            //if ( config.cartebancaire ) clientOutput += "<li>" + res.__("sur place par carte bancaire") + "</li>";
+            //if ( config.cash ) clientOutput += "<li>" + res.__("sur place en espèces") + "</li>";
+            //if ( config.iban ) clientOutput += "<li>" + res.__("par virement sur le compte %s, en mentionnant votre nom et votre numéro de réservation %s", config.iban, reservation.hash) + "</li>";
+            //clientOutput += "</ul>";
             clientOutput += "<p>"+ config.lienUtile +"</p>";
             
             

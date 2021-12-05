@@ -62,7 +62,7 @@
         "notBeforeToday": true
     },
     {
-        "label": "Participation aux frais, selon vos moyens",
+        "label": "Participation aux frais journaliers, selon vos moyens",
         "name": "price",
         "type": "radio",
         "options": [ 
